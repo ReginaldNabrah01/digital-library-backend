@@ -8,8 +8,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-
-server.get("/test-db", async (req, res) => {
+app.get("/test-db", async (req, res) => {
     try {
         const result = await pool.query("SELECT NOW() as time");
         res.json({
@@ -74,7 +73,7 @@ function adminOnly(req, res, next) {
 }
 
 /* ----------------------------------------------------
-   REGISTER (students only — plain text passwords)
+   REGISTER
 -----------------------------------------------------*/
 app.post("/register", async (req, res) => {
   try {
@@ -303,7 +302,7 @@ app.post("/return/:bookId", auth, async (req, res) => {
 });
 
 /* ----------------------------------------------------
-   USER'S BORROWING HISTORY
+   USER BORROW HISTORY
 -----------------------------------------------------*/
 app.get("/my-borrows", auth, async (req, res) => {
   try {
