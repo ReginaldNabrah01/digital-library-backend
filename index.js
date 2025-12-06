@@ -299,6 +299,23 @@ app.get("/my-borrows", auth, async (req, res) => {
   }
 });
 
+server.get("/test-db", async (req, res) => {
+    try {
+        const result = await pool.query("SELECT NOW() as time");
+        res.json({
+            success: true,
+            message: "✅ Database connected!",
+            time: result.rows[0].time
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "❌ Database error",
+            error: error.message
+        });
+    }
+});
+
 /* ----------------------------------------------------
    SERVER ROOT
 -----------------------------------------------------*/
