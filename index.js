@@ -8,6 +8,28 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+
+server.get("/test-db", async (req, res) => {
+    try {
+        const result = await pool.query("SELECT NOW() as time");
+        res.json({
+            success: true,
+            message: "✅ Database connected!",
+            time: result.rows[0].time,
+            server: "Render",
+            status: "Live"
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "❌ Database error",
+            error: error.message,
+            server: "Render",
+            status: "Error"
+        });
+    }
+});
+
 /* ----------------------------------------------------
    JWT TOKEN GENERATION
 -----------------------------------------------------*/
@@ -297,23 +319,6 @@ app.get("/my-borrows", auth, async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-});
-
-server.get("/test-db", async (req, res) => {
-    try {
-        const result = await pool.query("SELECT NOW() as time");
-        res.json({
-            success: true,
-            message: "Database is connected!",
-            time: result.rows[0].time
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Database connection test failed.",
-            error: error.message
-        });
-    }
 });
 
 /* ----------------------------------------------------
