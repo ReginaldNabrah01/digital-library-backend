@@ -304,13 +304,13 @@ server.get("/test-db", async (req, res) => {
         const result = await pool.query("SELECT NOW() as time");
         res.json({
             success: true,
-            message: "✅ Database connected!",
+            message: "Database is connected!",
             time: result.rows[0].time
         });
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: "❌ Database error",
+            message: "Database connection test failed.",
             error: error.message
         });
     }
