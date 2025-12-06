@@ -14,7 +14,7 @@ server.get("/test-db", async (req, res) => {
         const result = await pool.query("SELECT NOW() as time");
         res.json({
             success: true,
-            message: "✅ Database connected!",
+            message: "Database connected!",
             time: result.rows[0].time,
             server: "Render",
             status: "Live"
@@ -22,7 +22,7 @@ server.get("/test-db", async (req, res) => {
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: "❌ Database error",
+            message: "Database error",
             error: error.message,
             server: "Render",
             status: "Error"
