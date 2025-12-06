@@ -29,9 +29,7 @@ app.get("/test-db", async (req, res) => {
     }
 });
 
-/* ----------------------------------------------------
-   JWT TOKEN GENERATION
------------------------------------------------------*/
+/* JWT TOKEN GENERATION*/
 function generateToken(user) {
   return jwt.sign(
     {
@@ -44,9 +42,7 @@ function generateToken(user) {
   );
 }
 
-/* ----------------------------------------------------
-   MIDDLEWARE: AUTHENTICATION
------------------------------------------------------*/
+/*AUTHENTICATION*/
 function auth(req, res, next) {
   const header = req.headers.authorization;
   if (!header) return res.status(401).json({ message: "Missing token" });
@@ -62,9 +58,7 @@ function auth(req, res, next) {
   }
 }
 
-/* ----------------------------------------------------
-   MIDDLEWARE: ADMIN ONLY
------------------------------------------------------*/
+/*ADMIN ONLY*/
 function adminOnly(req, res, next) {
   if (req.user.role !== "admin") {
     return res.status(403).json({ message: "Admins only" });
@@ -72,9 +66,7 @@ function adminOnly(req, res, next) {
   next();
 }
 
-/* ----------------------------------------------------
-   REGISTER
------------------------------------------------------*/
+/*REGISTER*/
 app.post("/register", async (req, res) => {
   try {
     const { email, password, name } = req.body;
@@ -104,9 +96,7 @@ app.post("/register", async (req, res) => {
   }
 });
 
-/* ----------------------------------------------------
-   LOGIN
------------------------------------------------------*/
+/*LOGIN*/
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -137,9 +127,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-/* ----------------------------------------------------
-   GET ALL BOOKS
------------------------------------------------------*/
+/*GET ALL BOOKS*/
 app.get("/books", async (req, res) => {
   try {
     const books = await pool.query("SELECT * FROM books ORDER BY id ASC");
@@ -149,9 +137,29 @@ app.get("/books", async (req, res) => {
   }
 });
 
-/* ----------------------------------------------------
-   ADD BOOK (admin only)
------------------------------------------------------*/
+/*GET ONE BOOK BY ID*/
+app.get("/books/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await pool.query(
+      "SELECT * FROM books WHERE id = $1",
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+
+    res.json(result.rows[0]);
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+/*ADD BOOK (admin only)*/
 app.post("/books", auth, adminOnly, async (req, res) => {
   try {
     const {
@@ -187,9 +195,7 @@ app.post("/books", auth, adminOnly, async (req, res) => {
   }
 });
 
-/* ----------------------------------------------------
-   UPDATE BOOK (admin only)
------------------------------------------------------*/
+/*UPDATE BOOK (admin only)*/
 app.put("/books/:id", auth, adminOnly, async (req, res) => {
   try {
     const {
@@ -227,9 +233,7 @@ app.put("/books/:id", auth, adminOnly, async (req, res) => {
   }
 });
 
-/* ----------------------------------------------------
-   DELETE BOOK (admin only)
------------------------------------------------------*/
+/*DELETE BOOK (admin only)*/
 app.delete("/books/:id", auth, adminOnly, async (req, res) => {
   try {
     await pool.query("DELETE FROM books WHERE id=$1", [req.params.id]);
@@ -239,9 +243,7 @@ app.delete("/books/:id", auth, adminOnly, async (req, res) => {
   }
 });
 
-/* ----------------------------------------------------
-   BORROW BOOK
------------------------------------------------------*/
+/*BORROW BOOK*/
 app.post("/borrow/:bookId", auth, async (req, res) => {
   try {
     const bookId = req.params.bookId;
@@ -277,9 +279,7 @@ app.post("/borrow/:bookId", auth, async (req, res) => {
   }
 });
 
-/* ----------------------------------------------------
-   RETURN BOOK
------------------------------------------------------*/
+/*RETURN BOOK*/
 app.post("/return/:bookId", auth, async (req, res) => {
   try {
     await pool.query(
@@ -301,9 +301,7 @@ app.post("/return/:bookId", auth, async (req, res) => {
   }
 });
 
-/* ----------------------------------------------------
-   USER BORROW HISTORY
------------------------------------------------------*/
+/*USER BORROW HISTORY*/
 app.get("/my-borrows", auth, async (req, res) => {
   try {
     const history = await pool.query(
@@ -320,9 +318,7 @@ app.get("/my-borrows", auth, async (req, res) => {
   }
 });
 
-/* ----------------------------------------------------
-   SERVER ROOT
------------------------------------------------------*/
+/*SERVER ROOT*/
 app.get("/", (req, res) => {
   res.send("Digital Library Backend is Running Successfully");
 });
